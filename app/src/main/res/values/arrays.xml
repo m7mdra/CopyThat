@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sortEntries">
+        <item>Name Ascending</item>
+        <item>Date Ascending</item>
+        <item>Name Descending</item>
+        <item>Date Descending</item>
+    </string-array>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CopyThat</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="you_haven_t_copied_anything_yet_copy_this_text">You haven\'t copied anything yet\n Copy this text</string>
+
+</resources>
