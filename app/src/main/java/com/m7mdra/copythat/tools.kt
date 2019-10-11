@@ -12,15 +12,12 @@
 
 package com.m7mdra.copythat
 
-import android.util.Log
-import android.content.Context.ACTIVITY_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
-import android.app.ActivityManager
 import android.content.Context
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.SortedList
 import io.reactivex.CompletableTransformer
-import io.reactivex.FlowableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -36,6 +33,14 @@ fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
+fun View.visible() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
 fun Long?.toDate(): Date {
     return if (this != null)
         Date(this)
@@ -46,7 +51,7 @@ fun List<Disposable>.dispose() = filter { !it.isDisposed }.forEach { it.dispose(
 
 fun ioMainTransformer() = CompletableTransformer { upstream ->
     upstream.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread())
 }
 
 fun <T> SortedList<T>.toList(): List<T> {
@@ -58,5 +63,11 @@ fun <T> SortedList<T>.toList(): List<T> {
     }
     return list
 }
+
+fun String.removeNewLineAndTaps() =
+    this.replace(regex = Regex("\n"), replacement = "")
+        .replace(regex = Regex("\t"), replacement = "")
+        .replace(regex = Regex("\r"), replacement = "")
+
 
 

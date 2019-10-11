@@ -32,7 +32,6 @@ class ClipBoard(private val context: Context, private val database: ClipDatabase
         if (primaryClip != null) {
             val description = primaryClip.description
             val item = primaryClip.getItemAt(0)
-            val htmlText = item.htmlText
             val text = item.text
 
             val mimeType = description.getMimeType(0)
@@ -42,8 +41,10 @@ class ClipBoard(private val context: Context, private val database: ClipDatabase
             } else {
                 System.currentTimeMillis()
             }
-            val clipEntry = ClipEntry(data = text?.toString() ?: htmlText, date = date, mimeType = mimeType)
-            insertToDb(clipEntry)
+            if (text != null && text.isNotEmpty()) {
+                val clipEntry = ClipEntry(data = text.toString(), date = date, mimeType = mimeType)
+                insertToDb(clipEntry)
+            }
         }
     }
 

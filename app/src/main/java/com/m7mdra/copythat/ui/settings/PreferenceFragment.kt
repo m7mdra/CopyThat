@@ -20,7 +20,6 @@ import com.m7mdra.copythat.R
 class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings_prefence)
-
     }
 
 

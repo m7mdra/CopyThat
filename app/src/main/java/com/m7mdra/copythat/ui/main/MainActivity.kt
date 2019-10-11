@@ -12,57 +12,110 @@
 
 package com.m7mdra.copythat.ui.main
 
+import android.app.ActivityManager
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import com.google.android.material.snackbar.Snackbar
 import com.m7mdra.copythat.*
-import com.m7mdra.copythat.ui.settings.SettingsFragment
 import com.m7mdra.copythat.clipboard.ClipBoardService
+import com.m7mdra.copythat.ui.search.SearchFragment
+import com.m7mdra.copythat.ui.settings.SettingsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
+
 
 class MainActivity : AppCompatActivity() {
+
 
     private val viewModel: MainViewModel by viewModel()
     private lateinit var adapter: ClipEntriesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        adapter = ClipEntriesAdapter({
+        adapter = ClipEntriesAdapter(
+            onClick = {
 
-        }, {
-            viewModel.toggleFavorite(it)
-        })
+            }, onToggleFavoriteClicked = {
+                viewModel.toggleFavorite(it)
+            },
+            onDeleteClicked = {
+                AlertDialog.Builder(this,R.style.Theme_MaterialComponents_Light_Dialog)
+                    .setTitle("Remove Entry?")
+
+                    .setMessage("Entry will remove for ever, are you sure?")
+                    .setPositiveButton("Remove") { dialogInterface: DialogInterface, _: Int ->
+                        viewModel.deleteEntry(it)
+                        dialogInterface.dismiss()
+                    }.setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            },onShareClicked = {
+                val share = Intent(Intent.ACTION_SEND)
+                share.type = "text/plain"
+                share.putExtra(Intent.EXTRA_TEXT, it.data)
+
+                startActivity(Intent.createChooser(share, "Share link!"))
+            })
         entriesRecyclerView.apply {
             adapter = this@MainActivity.adapter
             layoutManager = LinearLayoutManager(this@MainActivity)
         }
+        viewModel.deleteLiveData.observe(this, Observer {
+            when (it) {
+                is DeleteFailedEvent -> Snackbar.make(
+                    main,
+                    "Failed to delete record",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                is DeleteSuccessEvent -> {
+                    adapter.notifyDataSetChanged()
+                    Snackbar.make(
+                        main,
+                        "Record delete successfully",
+                        Snackbar.LENGTH_LONG
+                    ).setAction("Undo") {
+                        viewModel.unDoDelete()
+                    }.show()
+                }
+            }
+        })
         viewModel.clipEntriesLiveData.observe(this, Observer { it ->
             it.log()
             if (it is QuerySuccessEvent) {
                 statusTextView.visibility = View.GONE
+                entriesRecyclerView.visibility = View.VISIBLE
+
                 adapter.addItems(it.entries)
             }
             if (it is QueryEventError) {
                 statusTextView.text = it.throwable.message
-                statusTextView.visibility=View.VISIBLE
+                statusTextView.visibility = View.VISIBLE
 
             }
-            if (it is QueryEmptyEvent){
-                statusTextView.visibility=View.VISIBLE
+            if (it is QueryEmptyEvent) {
+                entriesRecyclerView.visibility = View.GONE
+                statusTextView.visibility = View.VISIBLE
             }
 
         })
         viewModel.loadEntries()
-        if (ClipBoardService.isActive) {
+        if (isMyServiceRunning(ClipBoardService::class.java)) {
             checked()
         } else {
             notChecked()
@@ -83,10 +136,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         searchBar.setOnQueryTextFocusChangeListener { v, hasFocus ->
-            searchLayout.visibility = if (hasFocus)
-                View.VISIBLE
-            else
-                View.GONE
+            if (hasFocus)
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.main, SearchFragment(), "searchFragment")
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    addToBackStack("")
+                    commit()
+
+                }
         }
         settingsButton.setOnClickListener {
             supportFragmentManager.beginTransaction().apply {
@@ -117,5 +174,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
 }

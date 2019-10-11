@@ -22,7 +22,7 @@ data class ClipEntry(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val data: String,
-    val date: Long,
+    var date: Long,
     val mimeType: String,
     var isFavorite: Int = 0
 ) : Serializable{

@@ -25,7 +25,7 @@ interface ClipEntryDao {
     @Query("DELETE FROM clipEntries")
     fun deleteAll(): Completable
 
-    @Query("SELECT * FROM clipEntries WHERE data LIKE :query ")
+    @Query("SELECT * FROM clipEntries WHERE data LIKE '%' || :query || '%' ")
     fun findEntries(query: String): Flowable<List<ClipEntry>>
 
     @Query("DELETE FROM clipEntries where id = :id")
@@ -34,7 +34,7 @@ interface ClipEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(clipEntry: ClipEntry): Completable
 
-    @Update()
+    @Update
     fun toggleFavorite(clipEntry: ClipEntry): Completable
 
     @Query("SELECT * FROM clipEntries WHERE isFavorite=1")

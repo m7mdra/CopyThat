@@ -25,9 +25,7 @@ class ClipBoardService : Service() {
     private val clipBoard: ClipBoard by inject()
     private val clipNotification: ClipNotification by inject()
 
-    companion object {
-        var isActive = false
-    }
+
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -36,14 +34,12 @@ class ClipBoardService : Service() {
     override fun onCreate() {
         super.onCreate()
         "Service Created".log()
-        isActive = true
 
         clipBoard.start()
     }
 
     override fun onDestroy() {
         clipBoard.stop()
-        isActive = false
         super.onDestroy()
         "Service stopped".log()
     }
@@ -54,7 +50,6 @@ class ClipBoardService : Service() {
             stopSelf()
             return super.onStartCommand(intent, flags, startId)
         } else {
-
             startForeground(NOTIFICATION_ID, clipNotification.builder.build())
             return START_STICKY
         }

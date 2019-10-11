@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
 
-        xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference android:title="Delete all saved data"
-                android:persistent="false"
-                android:icon="@drawable/ic_delete_forever_black_24dp"
-                android:summary="Waring: this action is irreversible"/>
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:icon="@drawable/ic_smartphone_black_24dp"
+        android:title="Start CopyThat on System boot"
+        android:checked="true"
+        android:key="start_on_boot"
+        android:summary="When the phone restart the application will start tracking you clipboard actions"
+
+        />
+    <Preference
+        android:icon="@drawable/ic_delete_forever_black_24dp"
+        android:summary="Waring: this action is irreversible"
+        android:title="Delete all saved data" />
 
 
     <Preference
-            android:title="About CopyThat"
-            android:key="key_about"
-            android:summary="Version 0.1"
-            android:icon="@drawable/ic_info_outline_black_24dp"
-            android:persistent="false"/>
+        android:icon="@drawable/ic_info_outline_black_24dp"
+        android:key="key_about"
+        android:summary="Version 0.1"
+        android:title="About CopyThat" />
     <Preference
-            android:key="key_rate_us"
-            android:persistent="false"
-            android:title="Rate CopyThat on Google Play"
-            android:icon="@drawable/ic_stars_black_24dp"/>
+        android:icon="@drawable/ic_stars_black_24dp"
+        android:key="key_rate_us"
+        android:title="Rate CopyThat on Google Play" />
     <Preference
-            android:persistent="false"
-            android:icon="@drawable/ic_code_black_24dp"
-            android:title="Open Source License"
-            android:key="key_open_source_license"
-    />
+        android:icon="@drawable/ic_code_black_24dp"
+        android:key="key_open_source_license"
+        android:title="Open Source License" />
 
     <Preference
-            android:persistent="false"
-            android:icon="@drawable/ic_warning_black_24dp"
-            android:title="Privacy policy"
-            android:key="key_privacy_policy"
-    />
+        android:icon="@drawable/ic_warning_black_24dp"
+        android:key="key_privacy_policy"
+        android:title="Privacy policy" />
 
 </PreferenceScreen>
