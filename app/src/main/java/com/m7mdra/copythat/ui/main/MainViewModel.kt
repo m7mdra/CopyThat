@@ -34,7 +34,7 @@ class MainViewModel(private val clipDatabase: ClipDatabase) : ViewModel() {
             .toggleFavorite(clipEntry)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, {})
+            .subscribe()
     }
 
     fun deleteEntry(clipEntry: ClipEntry) {
@@ -52,12 +52,24 @@ class MainViewModel(private val clipDatabase: ClipDatabase) : ViewModel() {
             })
     }
 
+    fun findClip(id: Int) {
+        disposables + clipDatabase.dao().findClipById(id)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                clipEntriesLiveData.value = QuerySuccessEvent(listOf(it))
+            }, {
+                clipEntriesLiveData.value = QueryEventError(it)
+            })
+    }
+
 
     fun loadEntries() {
         disposables + clipDatabase.dao().getEntries()
 
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+
             .subscribe({
                 clipEntriesLiveData.value = if (it.isEmpty())
                     QueryEmptyEvent()

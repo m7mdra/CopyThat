@@ -15,7 +15,7 @@ package com.m7mdra.copythat.database
 import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import org.intellij.lang.annotations.Flow
+import io.reactivex.Observable
 
 @Dao
 interface ClipEntryDao {
@@ -28,7 +28,10 @@ interface ClipEntryDao {
     @Query("SELECT * FROM clipEntries WHERE data LIKE '%' || :query || '%' ")
     fun findEntries(query: String): Flowable<List<ClipEntry>>
 
-    @Query("DELETE FROM clipEntries where id = :id")
+    @Query("SELECT * FROM clipEntries WHERE id= :id")
+    fun findClipById(id: Int): Flowable<ClipEntry>
+
+    @Query("DELETE FROM clipEntries WHERE id = :id")
     fun deleteEntry(id: Int): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -37,7 +40,7 @@ interface ClipEntryDao {
     @Update
     fun toggleFavorite(clipEntry: ClipEntry): Completable
 
-    @Query("SELECT * FROM clipEntries WHERE isFavorite=1")
+    @Query("SELECT * FROM clipEntries WHERE isFavorite = 1")
     fun getFavoriteEntries(): Flowable<List<ClipEntry>>
 
 }

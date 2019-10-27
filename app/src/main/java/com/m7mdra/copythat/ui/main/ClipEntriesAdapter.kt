@@ -17,12 +17,13 @@ import android.graphics.Typeface
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.m7mdra.copythat.R
-
 import com.m7mdra.copythat.database.ClipEntry
 import com.m7mdra.copythat.removeNewLineAndTaps
 import kotlinx.android.synthetic.main.row_clip_entry.view.*
+import java.util.*
 
 
 class ClipEntriesAdapter(
@@ -34,11 +35,17 @@ class ClipEntriesAdapter(
     private val clipList = mutableListOf<ClipEntry>()
 
     fun addItems(list: List<ClipEntry>) {
-        clear()
-        clipList.addAll(list)
-        clipList.sortByDescending { it.id }
-        clipList.sortByDescending { it.isFavorite }
-        notifyDataSetChanged()
+        if (clipList.isNotEmpty()) {
+            val diffUlti = EntiresDiffUlti(clipList, list)
+            val calculateDiff = DiffUtil.calculateDiff(diffUlti)
+            clipList.clear()
+            clipList.addAll(list)
+            calculateDiff.dispatchUpdatesTo(this)
+            notifyDataSetChanged()
+        } else {
+            clipList.addAll(list)
+            notifyDataSetChanged()
+        }
     }
 
     private fun clear() {

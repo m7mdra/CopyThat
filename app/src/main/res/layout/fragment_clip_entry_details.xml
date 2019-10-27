@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019.
+  ~             ______               _
+  ~            |____  |             | |
+  ~   _ __ ___     / /_ __ ___    __| | _ __  __ _
+  ~  | '_ ` _ \   / /| '_ ` _ \  / _` || '__|/ _` |
+  ~  | | | | | | / / | | | | | || (_| || |  | (_| |
+  ~  |_| |_| |_|/_/  |_| |_| |_| \__,_||_|   \__,_|
+  ~
+  ~
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:windowBackground"
+    android:orientation="vertical"
+    tools:context=".ui.details.ClipEntryDetailsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="?actionBarItemBackground"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_close_black_24dp" />
+        </androidx.cardview.widget.CardView>
+
+        <ScrollView
+            android:id="@+id/dataScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp">
+
+            <TextView
+
+                android:id="@+id/clipDataTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:autoLink="all"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/undoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Item Deleted Successfully"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_marginTop="8dp"
+            android:id="@+id/undoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@color/colorAccent"
+            android:text="undo" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:id="@+id/clipControls"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/toggleFavoriteButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?actionBarItemBackground"
+                android:drawableTop="@drawable/ic_favorite_border_black_24dp"
+                android:text="Favorite" />
+
+            <TextView
+                android:id="@+id/shareButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:background="?actionBarItemBackground"
+                android:drawableTop="@drawable/ic_share_black_24dp"
+                android:text="Share" />
+
+            <TextView
+                android:id="@+id/deleteButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?actionBarItemBackground"
+                android:drawableTop="@drawable/ic_delete_forever_black_24dp"
+                android:text="Delete" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

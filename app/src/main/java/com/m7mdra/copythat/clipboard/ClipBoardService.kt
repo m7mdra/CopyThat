@@ -13,8 +13,9 @@
 package com.m7mdra.copythat.clipboard
 
 import android.app.Service
-import android.content.*
+import android.content.Intent
 import android.os.IBinder
+import androidx.lifecycle.MutableLiveData
 import com.m7mdra.copythat.ACTION_STOP_SERVICE
 import com.m7mdra.copythat.NOTIFICATION_ID
 import com.m7mdra.copythat.log
@@ -25,7 +26,11 @@ class ClipBoardService : Service() {
     private val clipBoard: ClipBoard by inject()
     private val clipNotification: ClipNotification by inject()
 
+    companion object {
+        var isServiceRunning = false
+        val runningLiveData = MutableLiveData<Boolean>()
 
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -34,7 +39,6 @@ class ClipBoardService : Service() {
     override fun onCreate() {
         super.onCreate()
         "Service Created".log()
-
         clipBoard.start()
     }
 
@@ -45,15 +49,24 @@ class ClipBoardService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.action == ACTION_STOP_SERVICE) {
+        return if (intent.action == ACTION_STOP_SERVICE) {
             stopForeground(true)
             stopSelf()
-            return super.onStartCommand(intent, flags, startId)
+            runningLiveData.value = false
+            isServiceRunning = false
+            super.onStartCommand(intent, flags, startId)
         } else {
+            runningLiveData.value = true
+            isServiceRunning = true
+
             startForeground(NOTIFICATION_ID, clipNotification.builder.build())
-            return START_STICKY
+            START_STICKY
         }
     }
 
-
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        runningLiveData.value = false
+        isServiceRunning = false
+    }
 }

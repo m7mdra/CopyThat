@@ -41,6 +41,18 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
+fun View.hide() {
+    animate().alpha(0f).withEndAction {
+        invisible()
+    }.start()
+}
+
+fun View.show() {
+    animate().alpha(1f).withEndAction {
+        visible()
+    }.start()
+}
+
 fun Long?.toDate(): Date {
     return if (this != null)
         Date(this)

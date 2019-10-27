@@ -15,17 +15,21 @@ package com.m7mdra.copythat.ui.main
 import androidx.recyclerview.widget.DiffUtil
 import com.m7mdra.copythat.database.ClipEntry
 
-class EntiresDiffUlti(private val oldList: List<ClipEntry>, private val newList: List<ClipEntry>) : DiffUtil.Callback() {
+class EntiresDiffUlti(
+    private val oldList: List<ClipEntry>,
+    private val newList: List<ClipEntry>
+) : DiffUtil.Callback() {
 
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].id == newList[newItemPosition].id
-    }
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        oldList[oldItemPosition].id == newList[newItemPosition].id &&
+                oldList[oldItemPosition].isFavorite == newList[newItemPosition].isFavorite
+
 
     override fun getOldListSize(): Int = oldList.size
 
+
     override fun getNewListSize(): Int = newList.size
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
-    }
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        oldList[oldItemPosition] == newList[newItemPosition]
 
 }

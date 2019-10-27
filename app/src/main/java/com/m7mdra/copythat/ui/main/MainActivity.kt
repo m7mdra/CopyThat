@@ -13,13 +13,10 @@
 package com.m7mdra.copythat.ui.main
 
 import android.app.ActivityManager
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
@@ -28,15 +25,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.m7mdra.copythat.*
 import com.m7mdra.copythat.clipboard.ClipBoardService
+import com.m7mdra.copythat.ui.details.ClipEntryDetailsFragment
 import com.m7mdra.copythat.ui.search.SearchFragment
 import com.m7mdra.copythat.ui.settings.SettingsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,25 +40,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        copyText.setOnClickListener {
+            (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
+                ClipData.newPlainText(
+                    "Copythat",
+                    "Awesome, you copied this text, click to see details\n"
+                )
+        }
         adapter = ClipEntriesAdapter(
             onClick = {
-
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.main, ClipEntryDetailsFragment.from(it), "details")
+                    .addToBackStack(null)
+                    .commit()
             }, onToggleFavoriteClicked = {
                 viewModel.toggleFavorite(it)
             },
             onDeleteClicked = {
-                AlertDialog.Builder(this,R.style.Theme_MaterialComponents_Light_Dialog)
-                    .setTitle("Remove Entry?")
-
-                    .setMessage("Entry will remove for ever, are you sure?")
-                    .setPositiveButton("Remove") { dialogInterface: DialogInterface, _: Int ->
+                AlertDialog.Builder(this, R.style.Theme_MaterialComponents_Light_Dialog)
+                    .setTitle(getString(R.string.remove_entry_dialog_title))
+                    .setMessage(getString(R.string.remove_entry_dialog_message))
+                    .setPositiveButton(getString(R.string.remove_entry_dialog_positive_button)) { dialogInterface: DialogInterface, _: Int ->
                         viewModel.deleteEntry(it)
                         dialogInterface.dismiss()
-                    }.setNegativeButton("Cancel") { dialog, _ ->
+                    }
+                    .setNegativeButton(getString(R.string.remove_entry_dialog_negative_button)) { dialog, _ ->
                         dialog.dismiss()
                     }
                     .show()
-            },onShareClicked = {
+            }, onShareClicked = {
                 val share = Intent(Intent.ACTION_SEND)
                 share.type = "text/plain"
                 share.putExtra(Intent.EXTRA_TEXT, it.data)
@@ -96,31 +99,32 @@ class MainActivity : AppCompatActivity() {
             }
         })
         viewModel.clipEntriesLiveData.observe(this, Observer { it ->
-            it.log()
             if (it is QuerySuccessEvent) {
-                statusTextView.visibility = View.GONE
-                entriesRecyclerView.visibility = View.VISIBLE
-
+                statusTextView.invisible()
+                entriesRecyclerView.visible()
                 adapter.addItems(it.entries)
             }
-            if (it is QueryEventError) {
-                statusTextView.text = it.throwable.message
-                statusTextView.visibility = View.VISIBLE
 
-            }
             if (it is QueryEmptyEvent) {
-                entriesRecyclerView.visibility = View.GONE
-                statusTextView.visibility = View.VISIBLE
+                entriesRecyclerView.invisible()
+                statusTextView.visible()
             }
 
         })
         viewModel.loadEntries()
-        if (isMyServiceRunning(ClipBoardService::class.java)) {
+        ClipBoardService.runningLiveData.observe(this, Observer {
+            if (it) {
+                checked()
+            } else {
+                notChecked()
+            }
+        })
+
+        if (ClipBoardService.isServiceRunning) {
             checked()
         } else {
             notChecked()
         }
-
         _switch.setOnCheckedChangeListener { buttonView, isChecked ->
             val intent = Intent(this@MainActivity, ClipBoardService::class.java)
             if (isChecked) {

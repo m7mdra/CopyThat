@@ -31,7 +31,9 @@ val appModule = module {
 }
 
 val databaseModule = module {
-    single { Room.databaseBuilder(androidContext(), ClipDatabase::class.java, "clips").build() }
+    single { Room.databaseBuilder(androidContext(), ClipDatabase::class.java, "clips")
+
+        .build() }
 
 }
 
