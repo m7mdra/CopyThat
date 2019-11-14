@@ -17,14 +17,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.m7mdra.copythat.*
-import com.m7mdra.copythat.database.ClipDatabase
+import com.m7mdra.copythat.database.ClipRepository
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-class SearchFragmentViewModel(private val clipDatabase: ClipDatabase) : ViewModel() {
+class SearchFragmentViewModel(private val repository: ClipRepository) : ViewModel() {
     private val queryEvent = MutableLiveData<QueryEvent>()
     private val disposables = mutableListOf<Disposable>()
     fun observe(owner: LifecycleOwner, observable: Observer<QueryEvent>) =
@@ -34,7 +34,7 @@ class SearchFragmentViewModel(private val clipDatabase: ClipDatabase) : ViewMode
         disposables + Flowable.just(keyword)
             .filter { it.isNotEmpty() }
             .debounce(2, TimeUnit.SECONDS)
-            .flatMap { clipDatabase.dao().findEntries(it) }
+            .flatMap { repository.findEntries(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

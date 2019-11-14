@@ -12,37 +12,26 @@
 
 package com.m7mdra.copythat.database
 
-import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 
-@Dao
-interface ClipEntryDao {
-    @Query("SELECT * FROM clipEntries")
+interface ClipRepository {
+
     fun getEntries(): Flowable<List<ClipEntry>>
 
-    @Query("DELETE FROM clipEntries")
     fun deleteAll(): Completable
 
-    @Query("SELECT * FROM clipEntries WHERE data LIKE '%' || :query || '%' ")
     fun findEntries(query: String): Flowable<List<ClipEntry>>
 
-    @Query("SELECT * FROM clipEntries WHERE id= :id")
     fun findClipById(id: Int): Flowable<ClipEntry>
 
-    @Query("DELETE FROM clipEntries WHERE id = :id")
     fun deleteEntry(id: Int): Completable
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(clipEntry: ClipEntry): Completable
 
-    @Update
     fun toggleFavorite(clipEntry: ClipEntry): Completable
 
-    @Query("SELECT * FROM clipEntries WHERE isFavorite = 1")
     fun getFavoriteEntries(): Flowable<List<ClipEntry>>
-
-    @Query("SELECT COUNT(id) FROM clipEntries")
-    fun getCount(): Flowable<Int>
+    fun getClipsCount(): Flowable<Int>
 
 }

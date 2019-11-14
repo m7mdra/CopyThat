@@ -12,7 +12,6 @@
 
 package com.m7mdra.copythat.ui.main
 
-import android.app.ActivityManager
 import android.content.*
 import android.os.Build
 import android.os.Bundle
@@ -21,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.m7mdra.copythat.*
@@ -29,6 +29,9 @@ import com.m7mdra.copythat.ui.details.ClipEntryDetailsFragment
 import com.m7mdra.copythat.ui.search.SearchFragment
 import com.m7mdra.copythat.ui.settings.SettingsFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -37,9 +40,38 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
     private lateinit var adapter: ClipEntriesAdapter
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ServiceEvent) {
+        updateSwitch()
+    }
+
+    private fun updateSwitch() {
+        if (isMyServiceRunning()) {
+            checked()
+        } else {
+            notChecked()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                intent?.action.log()
+            }
+        }, IntentFilter(ClipBoardService::class.java.simpleName))
         copyText.setOnClickListener {
             (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
                 ClipData.newPlainText(
@@ -47,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                     "Awesome, you copied this text, click to see details\n"
                 )
         }
+        updateSwitch()
         adapter = ClipEntriesAdapter(
             onClick = {
                 supportFragmentManager.beginTransaction()
@@ -72,8 +105,7 @@ class MainActivity : AppCompatActivity() {
                 val share = Intent(Intent.ACTION_SEND)
                 share.type = "text/plain"
                 share.putExtra(Intent.EXTRA_TEXT, it.data)
-
-                startActivity(Intent.createChooser(share, "Share link!"))
+                startActivity(Intent.createChooser(share, "Share a Clip"))
             })
         entriesRecyclerView.apply {
             adapter = this@MainActivity.adapter
@@ -98,34 +130,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        viewModel.clipEntriesLiveData.observe(this, Observer { it ->
+        viewModel.clipEntriesLiveData.observeForever {
             if (it is QuerySuccessEvent) {
                 statusTextView.invisible()
-                entriesRecyclerView.visible()
+                progressBar.invisible()
                 adapter.addItems(it.entries)
+                entriesRecyclerView.visible()
             }
-
+            if (it is LoadingEvent) {
+                statusTextView.invisible()
+                entriesRecyclerView.invisible()
+                progressBar.visible()
+            }
             if (it is QueryEmptyEvent) {
                 entriesRecyclerView.invisible()
+                progressBar.invisible()
                 statusTextView.visible()
             }
 
-        })
-        viewModel.loadEntries()
-        ClipBoardService.runningLiveData.observe(this, Observer {
-            if (it) {
-                checked()
-            } else {
-                notChecked()
-            }
-        })
-
-        if (ClipBoardService.isServiceRunning) {
-            checked()
-        } else {
-            notChecked()
         }
-        _switch.setOnCheckedChangeListener { buttonView, isChecked ->
+        viewModel.loadEntries()
+
+        switchWidget.setOnCheckedChangeListener { _, isChecked ->
             val intent = Intent(this@MainActivity, ClipBoardService::class.java)
             if (isChecked) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -133,13 +159,11 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     startService(intent)
                 }
-                checked()
             } else {
                 stopService(intent)
-                notChecked()
             }
         }
-        searchBar.setOnQueryTextFocusChangeListener { v, hasFocus ->
+        searchBar.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus)
                 supportFragmentManager.beginTransaction().apply {
                     replace(R.id.main, SearchFragment(), "searchFragment")
@@ -149,6 +173,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
         }
+
         settingsButton.setOnClickListener {
             supportFragmentManager.beginTransaction().apply {
                 replace(R.id.main, SettingsFragment(), "settingsFragment")
@@ -167,24 +192,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun notChecked() {
-        _switch.text = "CopyThat is not Running"
-        _switch.isChecked = false
+        switchWidget.text = "CopyThat is not Running"
+        switchWidget.isChecked = false
 
     }
 
     private fun checked() {
-        _switch.text = "CopyThat is Running"
-        _switch.isChecked = true
+        switchWidget.text = "CopyThat is Running"
+        switchWidget.isChecked = true
 
     }
 
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
-    }
+
 }

@@ -12,6 +12,7 @@
 
 package com.m7mdra.copythat.database
 
+import androidx.annotation.VisibleForTesting
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -26,6 +27,14 @@ data class ClipEntry(
     val mimeType: String,
     var isFavorite: Int = 0
 ) : Serializable {
+    companion object {
+        @VisibleForTesting
+        @JvmStatic
+        fun empty(): ClipEntry {
+            return ClipEntry(0, "", 0L, "", 0)
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

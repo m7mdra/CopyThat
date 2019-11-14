@@ -36,6 +36,37 @@ data class DeleteFailedEvent(val throwable: Throwable) : DeleteEvent() {
 }
 
 sealed class QueryEvent
+class LoadingEvent : QueryEvent() {
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
+
+    override fun hashCode(): Int {
+        return System.identityHashCode(this)
+    }
+}
+
+sealed class DeleteAllEvent
+class RecordsDeletedEvent : DeleteAllEvent() {
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
+
+    override fun hashCode(): Int {
+        return System.identityHashCode(this)
+    }
+}
+
+class RecordsDeleteFailedEvent : DeleteAllEvent() {
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
+
+    override fun hashCode(): Int {
+        return System.identityHashCode(this)
+    }
+}
+
 data class QuerySuccessEvent(val entries: List<ClipEntry>) : QueryEvent() {
     override fun equals(other: Any?): Boolean {
         return this === other

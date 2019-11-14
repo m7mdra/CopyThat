@@ -21,8 +21,7 @@ class EntiresDiffUlti(
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-        oldList[oldItemPosition].id == newList[newItemPosition].id &&
-                oldList[oldItemPosition].isFavorite == newList[newItemPosition].isFavorite
+        oldList[oldItemPosition] == newList[newItemPosition]
 
 
     override fun getOldListSize(): Int = oldList.size

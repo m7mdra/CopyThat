@@ -2,20 +2,33 @@
 <PreferenceScreen
 
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:icon="@drawable/ic_smartphone_black_24dp"
-        android:title="Start CopyThat on System boot"
-        android:checked="true"
-        android:key="start_on_boot"
-        android:summary="When the phone restart the application will start tracking you clipboard actions"
-
-        />
+    <PreferenceCategory
+        android:selectable="false"
+        android:title="Data" />
+    <Preference
+        android:icon="@drawable/ic_filter_9_plus_black_24dp"
+        android:key="key_clips_count"
+        android:summary="0 Clips saved"
+        android:title="Clip count" />
     <Preference
         android:icon="@drawable/ic_delete_forever_black_24dp"
+        android:key="key_delete_records"
         android:summary="Waring: this action is irreversible"
-        android:title="Delete all saved data" />
+        android:title="Delete all saved clips" />
+
+    <SwitchPreference
+        android:checked="true"
+        android:icon="@drawable/ic_smartphone_black_24dp"
+        android:key="start_on_boot"
+        android:summary="When the phone restart the application will start tracking you clipboard actions"
+        android:title="Start CopyThat on System boot" />
 
 
+    <PreferenceCategory
+        android:selectable="false"
+        android:title="Application"
+
+        />
     <Preference
         android:icon="@drawable/ic_info_outline_black_24dp"
         android:key="key_about"

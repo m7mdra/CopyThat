@@ -16,6 +16,7 @@ package com.m7mdra.copythat.ui.details
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -76,6 +77,12 @@ class ClipEntryDetailsFragment : Fragment() {
                     dialog.dismiss()
                 }
                 .show()
+        }
+        shareButton.setOnClickListener {
+            val share = Intent(Intent.ACTION_SEND)
+            share.type = "text/plain"
+            share.putExtra(Intent.EXTRA_TEXT, clipEntry.data)
+            startActivity(Intent.createChooser(share, "Share a Clip"))
         }
         undoButton.setOnClickListener {
             viewModel.unDoDelete()

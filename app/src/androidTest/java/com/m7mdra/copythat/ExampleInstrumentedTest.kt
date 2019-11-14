@@ -1,24 +1,93 @@
 package com.m7mdra.copythat
 
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
 
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.m7mdra.copythat.database.ClipDatabase
+import com.m7mdra.copythat.database.ClipEntry
+import com.m7mdra.copythat.database.ClipEntryDao
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.junit.Assert.*
-
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.m7mdra.copythat", appContext.packageName)
+    private lateinit var db: ClipDatabase
+    private lateinit var dao: ClipEntryDao
+    private val clipEntry = ClipEntry.empty()
+
+    @Before
+    fun setup() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(context, ClipDatabase::class.java)
+            .build()
+        dao = db.dao()
     }
+
+    @Test
+    fun testInsertNewClipEntry() {
+        dao.insert(clipEntry)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertNoValues()
+
+    }
+
+    @Test
+    fun testToggleLike() {
+        dao.toggleFavorite(clipEntry)
+            .test()
+
+            .assertComplete()
+            .assertNoErrors()
+
+    }
+
+    @Test
+    fun insertClipAndGet() {
+        dao.insert(clipEntry).blockingAwait()
+        dao.findClipById(clipEntry.id)
+            .test()
+            .assertValue {
+                it.id == clipEntry.id
+            }
+    }
+
+    @Test
+    fun findClipWhenItsNotInserted() {
+        dao.findClipById(1)
+            .test()
+            .assertNoValues()
+
+    }
+    @Test
+    fun testDeleteAll(){
+        dao.insert(clipEntry).blockingAwait()
+
+        dao.deleteAll().blockingAwait()
+        dao.getEntries()
+            .test()
+            .assertNoValues()
+    }
+    @Test
+    fun getAllClipEntries() {
+        for (i in 1..10) {
+            dao.insert(ClipEntry(i, "", 0L, "", 0)).blockingAwait()
+        }
+        dao.getEntries()
+            .test()
+            .assertValue {
+                it.isNotEmpty()
+            }
+    }
+
+    @After
+    fun tearDown() {
+        db.close()
+    }
+
 }

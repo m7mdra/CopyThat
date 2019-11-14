@@ -15,22 +15,19 @@ package com.m7mdra.copythat.clipboard
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import androidx.lifecycle.MutableLiveData
-import com.m7mdra.copythat.ACTION_STOP_SERVICE
-import com.m7mdra.copythat.NOTIFICATION_ID
-import com.m7mdra.copythat.log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.m7mdra.copythat.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
+
 
 class ClipBoardService : Service() {
 
+
     private val clipBoard: ClipBoard by inject()
     private val clipNotification: ClipNotification by inject()
-
-    companion object {
-        var isServiceRunning = false
-        val runningLiveData = MutableLiveData<Boolean>()
-
-    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -38,27 +35,27 @@ class ClipBoardService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        "Service Created".log()
         clipBoard.start()
+        EventBus.getDefault().post(ServiceStarted())
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(this::class.java.simpleName))
     }
 
     override fun onDestroy() {
         clipBoard.stop()
+        EventBus.getDefault().post(ServiceStopped())
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(this::class.java.simpleName))
         super.onDestroy()
-        "Service stopped".log()
+
+
     }
+
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         return if (intent.action == ACTION_STOP_SERVICE) {
             stopForeground(true)
             stopSelf()
-            runningLiveData.value = false
-            isServiceRunning = false
             super.onStartCommand(intent, flags, startId)
         } else {
-            runningLiveData.value = true
-            isServiceRunning = true
-
             startForeground(NOTIFICATION_ID, clipNotification.builder.build())
             START_STICKY
         }
@@ -66,7 +63,7 @@ class ClipBoardService : Service() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        runningLiveData.value = false
-        isServiceRunning = false
+        Bus.publish(ServiceStopped())
+
     }
 }

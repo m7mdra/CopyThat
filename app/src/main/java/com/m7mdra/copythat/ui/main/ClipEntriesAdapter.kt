@@ -35,27 +35,14 @@ class ClipEntriesAdapter(
     private val clipList = mutableListOf<ClipEntry>()
 
     fun addItems(list: List<ClipEntry>) {
-        if (clipList.isNotEmpty()) {
-            val diffUlti = EntiresDiffUlti(clipList, list)
-            val calculateDiff = DiffUtil.calculateDiff(diffUlti)
-            clipList.clear()
-            clipList.addAll(list)
-            calculateDiff.dispatchUpdatesTo(this)
-            notifyDataSetChanged()
-        } else {
-            clipList.addAll(list)
-            notifyDataSetChanged()
-        }
-    }
-
-    private fun clear() {
         clipList.clear()
-    }
-
-    fun clearAndNotify() {
-        clipList.clear()
+        clipList.addAll(list)
+        clipList.sortByDescending { it.id }
+        clipList.sortByDescending { it.isFavorite }
         notifyDataSetChanged()
     }
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClipEntriesViewHolder {

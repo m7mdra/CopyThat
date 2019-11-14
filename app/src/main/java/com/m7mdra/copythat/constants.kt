@@ -15,4 +15,6 @@ package com.m7mdra.copythat
 const val NOTIFICATION_CHANNEL_ID = "clipboard_service_channel"
 const val REQUEST_CODE_STOP_SERVICE = 10
 const val ACTION_STOP_SERVICE = "com.m7mdra.copythat.STOP_SERVICE"
+const val ACTION_START_SERVICE = "com.m7mdra.copythat.START_SERVICE"
+
 const val NOTIFICATION_ID = 31
