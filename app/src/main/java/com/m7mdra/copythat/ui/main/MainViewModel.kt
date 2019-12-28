@@ -21,6 +21,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: ClipRepository) : ViewModel() {
     private val disposables = mutableListOf<Disposable>()
@@ -29,7 +30,6 @@ class MainViewModel(private val repository: ClipRepository) : ViewModel() {
     private val lastDeleteItem = MutableLiveData<ClipEntry>()
 
     fun toggleFavorite(clipEntry: ClipEntry) {
-
         clipEntry.isFavorite = if (clipEntry.isFavorite == 0) 1 else 0
         disposables + repository
             .toggleFavorite(clipEntry)

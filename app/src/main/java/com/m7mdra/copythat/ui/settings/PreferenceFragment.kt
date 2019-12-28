@@ -17,15 +17,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Environment
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.m7mdra.copythat.R
-import com.m7mdra.copythat.RecordsDeleteFailedEvent
-import com.m7mdra.copythat.RecordsDeletedEvent
-import com.m7mdra.copythat.toast
+import com.m7mdra.copythat.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
 
 class PreferenceFragment : PreferenceFragmentCompat() {
     private lateinit var activity: Activity
@@ -39,6 +38,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings_prefence)
         settingsViewModel.loadClipsCount()
+
         findPreference<Preference>("key_delete_records")?.setOnPreferenceClickListener {
             AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog)
                 .setTitle(getString(R.string.remove_entry_dialog_title))
@@ -54,7 +54,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             true
         }
         settingsViewModel.clipsCountLiveData.observe(this, Observer {
-            findPreference<Preference>("key_clips_count")?.summary="$it clips saved."
+            findPreference<Preference>("key_clips_count")?.summary = "$it clips saved."
         })
 
         settingsViewModel.deleteEventLiveData.observe(this, Observer {

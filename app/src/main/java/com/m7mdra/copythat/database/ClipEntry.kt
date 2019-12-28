@@ -28,6 +28,7 @@ data class ClipEntry(
     var isFavorite: Int = 0
 ) : Serializable {
     companion object {
+        
         @VisibleForTesting
         @JvmStatic
         fun empty(): ClipEntry {

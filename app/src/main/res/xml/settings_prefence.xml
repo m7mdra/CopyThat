@@ -9,19 +9,31 @@
         android:icon="@drawable/ic_filter_9_plus_black_24dp"
         android:key="key_clips_count"
         android:summary="0 Clips saved"
-        android:title="Clip count" />
+        android:title="Saved clips count" />
     <Preference
         android:icon="@drawable/ic_delete_forever_black_24dp"
         android:key="key_delete_records"
         android:summary="Waring: this action is irreversible"
         android:title="Delete all saved clips" />
 
-    <SwitchPreference
-        android:checked="true"
-        android:icon="@drawable/ic_smartphone_black_24dp"
-        android:key="start_on_boot"
-        android:summary="When the phone restart the application will start tracking you clipboard actions"
-        android:title="Start CopyThat on System boot" />
+
+    <PreferenceCategory
+        android:selectable="false"
+        android:title="Backup - upcoming feature"
+
+        />
+    <Preference
+        android:key="key_backup"
+        android:enabled="false"
+        android:icon="@drawable/ic_backup_black_24dp"
+        android:summary="Backup will be created on your external SD Card.\nNote this requires permission"
+        android:title="Create backup" />
+    <Preference
+        android:key="key_restore"
+        android:enabled="false"
+        android:icon="@drawable/ic_settings_backup_restore_black_24dp"
+        android:summary="Restores previously created backups.\nNote this can overwrite existing clipboards"
+        android:title="Restore backup" />
 
 
     <PreferenceCategory
@@ -29,6 +41,12 @@
         android:title="Application"
 
         />
+    <SwitchPreference
+        android:checked="true"
+        android:icon="@drawable/ic_smartphone_black_24dp"
+        android:key="start_on_boot"
+        android:summary="When the phone restart the application will start tracking you clipboard actions"
+        android:title="Start CopyThat on System boot" />
     <Preference
         android:icon="@drawable/ic_info_outline_black_24dp"
         android:key="key_about"

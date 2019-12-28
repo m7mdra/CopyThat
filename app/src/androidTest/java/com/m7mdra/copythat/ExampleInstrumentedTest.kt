@@ -80,9 +80,7 @@ class ExampleInstrumentedTest {
         }
         dao.getEntries()
             .test()
-            .assertValue {
-                it.isNotEmpty()
-            }
+
     }
 
     @After

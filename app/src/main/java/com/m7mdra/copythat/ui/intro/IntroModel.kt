@@ -10,13 +10,14 @@
  *
  */
 
-package com.m7mdra.copythat.database
+package com.m7mdra.copythat.ui.intro
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
+import androidx.annotation.DrawableRes
 
-
-@Database(entities = [ClipEntry::class], version = 1, exportSchema = true)
-abstract class ClipDatabase : RoomDatabase() {
-    abstract fun dao(): ClipEntryDao
+data class IntroModel(@DrawableRes val image: Int, val title: String, val message: String) {
+    companion object {
+        fun empty(): IntroModel {
+            return IntroModel(0, "", "")
+        }
+    }
 }
