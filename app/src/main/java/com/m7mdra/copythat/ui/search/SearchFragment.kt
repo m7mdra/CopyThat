@@ -17,19 +17,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.m7mdra.copythat.*
+import com.m7mdra.copythat.ui.details.ClipEntryDetailsFragment
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchFragment : Fragment() {
     val searchFragmentViewModel: SearchFragmentViewModel by viewModel()
-    val adapter = SearchAdapter()
+    val adapter = SearchAdapter() {
+        val imm: InputMethodManager? =
+            getSystemService<InputMethodManager>(
+                context!!,
+                InputMethodManager::class.java
+            ) as InputMethodManager
+        if (imm != null) {
+            if (imm.isAcceptingText) { // verify if the soft keyboard is open
+                imm.hideSoftInputFromWindow(view?.windowToken, 0)
+            }
+        }
+        childFragmentManager.beginTransaction()
+            .replace(R.id.searchLayout, ClipEntryDetailsFragment.from(it), "details")
+            .addToBackStack(null)
+            .commit()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +61,12 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchRecyclerView.adapter = adapter
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
-        searchRecyclerView.addItemDecoration(DividerItemDecoration(context,DividerItemDecoration.VERTICAL))
+        searchRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         searchFragmentViewModel.observe(this, Observer {
             if (it is QuerySuccessEvent) {
                 emptyText.invisible()

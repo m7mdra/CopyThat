@@ -15,6 +15,7 @@ package com.m7mdra.copythat.database
 import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface ClipEntryDao {
@@ -44,5 +45,8 @@ interface ClipEntryDao {
 
     @Query("SELECT COUNT(id) FROM clipEntries")
     fun getCount(): Flowable<Int>
+
+    @Query("SELECT * FROM clipEntries where hash= :hash limit 1")
+    fun doseClipExists(hash: String): Single<ClipEntry?>
 
 }

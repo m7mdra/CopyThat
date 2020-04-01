@@ -14,6 +14,7 @@ package com.m7mdra.copythat.database
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 interface ClipRepository {
 
@@ -32,6 +33,8 @@ interface ClipRepository {
     fun toggleFavorite(clipEntry: ClipEntry): Completable
 
     fun getFavoriteEntries(): Flowable<List<ClipEntry>>
+
     fun getClipsCount(): Flowable<Int>
 
+    fun doseExists(hash:String): Single<Boolean>
 }

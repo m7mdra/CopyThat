@@ -17,8 +17,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -59,13 +57,13 @@ class ClipEntryDetailsFragment : Fragment() {
         updateData(clipEntry)
         viewModel.findClip(clipEntry.id)
         backButton.setOnClickListener {
-            getActivity()?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+            fragmentManager?.beginTransaction()?.remove(this)?.commit()
         }
         toggleFavoriteButton.setOnClickListener {
             viewModel.toggleFavorite(clipEntry)
         }
         deleteButton.setOnClickListener {
-            AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog)
+            AlertDialog.Builder(activity)
                 .setTitle(getString(R.string.remove_entry_dialog_title))
 
                 .setMessage(getString(R.string.remove_entry_dialog_message))
@@ -119,12 +117,7 @@ class ClipEntryDetailsFragment : Fragment() {
             ContextCompat.getDrawable(
                 activity,
                 if (clipEntry.isFavorite == 1) R.drawable.ic_favorite_black_24dp else R.drawable.ic_favorite_border_black_24dp
-            )?.apply {
-                setColorFilter(
-                    if (clipEntry.isFavorite == 1) Color.RED else Color.BLACK,
-                    PorterDuff.Mode.SRC_IN
-                )
-            },
+            ),
             null,
             null
         )

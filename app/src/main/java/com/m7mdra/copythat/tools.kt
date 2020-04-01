@@ -28,6 +28,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.util.*
 
 const val TAG = "MEGA"
@@ -35,6 +37,10 @@ fun Any?.log(tag: String = "MEGA") = this?.also {
     Log.d(tag, "$this")
 }
 
+fun String.md5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    return BigInteger(1, md.digest(toByteArray())).toString(16).padStart(32, '0')
+}
 fun Context.isMyServiceRunning(): Boolean {
     val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     for (service in manager.getRunningServices(Integer.MAX_VALUE)) {

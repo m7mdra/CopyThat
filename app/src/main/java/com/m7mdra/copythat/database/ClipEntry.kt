@@ -14,21 +14,24 @@ package com.m7mdra.copythat.database
 
 import androidx.annotation.VisibleForTesting
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
+import java.util.*
 
 
-@Entity(tableName = "clipEntries")
+@Entity(tableName = "clipEntries", indices = [Index("hash", unique = true)])
 data class ClipEntry(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val data: String,
-    var date: Long,
-    val mimeType: String,
-    var isFavorite: Int = 0
+    var date: Long = Date().time,
+    val mimeType: String="String",
+    var isFavorite: Int = 0,
+    var hash: String = ""
 ) : Serializable {
     companion object {
-        
+
         @VisibleForTesting
         @JvmStatic
         fun empty(): ClipEntry {

@@ -17,13 +17,12 @@ import android.graphics.Typeface
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.m7mdra.copythat.R
 import com.m7mdra.copythat.database.ClipEntry
 import com.m7mdra.copythat.removeNewLineAndTaps
 import kotlinx.android.synthetic.main.row_clip_entry.view.*
-import java.util.*
 
 
 class ClipEntriesAdapter(
@@ -41,8 +40,6 @@ class ClipEntriesAdapter(
         clipList.sortByDescending { it.isFavorite }
         notifyDataSetChanged()
     }
-
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClipEntriesViewHolder {
@@ -80,15 +77,28 @@ class ClipEntriesAdapter(
 
             if (clipEntry.isFavorite == 0) {
                 toggleFavoriteButton.setImageResource(R.drawable.ic_favorite_border_black_24dp)
-                toggleFavoriteButton.setColorFilter(Color.BLACK)
                 clipDataTextView.typeface = Typeface.DEFAULT
 
             } else {
                 toggleFavoriteButton.setImageResource(R.drawable.ic_favorite_black_24dp)
-                toggleFavoriteButton.setColorFilter(Color.RED)
                 clipDataTextView.typeface = Typeface.DEFAULT_BOLD
 
             }
+        }
+    }
+
+    fun isNotEmpty(): Boolean {
+        return itemCount != 0
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+    }
+
+    fun updateTime() {
+        repeat(itemCount) {
+            notifyItemChanged(it)
         }
     }
 

@@ -21,6 +21,15 @@ class ClipEntryRepository(private val dao: ClipEntryDao) : ClipRepository {
         return dao.getCount()
     }
 
+    override fun doseExists(hash: String): Single<Boolean> {
+        return dao.doseClipExists(hash)
+
+            .flatMap { clip: ClipEntry? ->
+                Single.just(clip != null)
+            }.onErrorReturn { false }
+
+    }
+
     override fun getEntries(): Flowable<List<ClipEntry>> = dao.getEntries()
 
     override fun deleteAll(): Completable = dao.deleteAll()

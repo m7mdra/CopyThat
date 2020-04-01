@@ -12,12 +12,10 @@
 
 package com.m7mdra.copythat.ui.search
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
-import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +28,8 @@ import java.util.*
 import java.util.regex.Pattern
 
 
-class SearchAdapter : RecyclerView.Adapter<SearchViewHolder>() {
+class SearchAdapter(
+    private val onClick: (ClipEntry) -> Unit) : RecyclerView.Adapter<SearchViewHolder>() {
     private val searchList: MutableList<ClipEntry> = mutableListOf()
     private var currentQuery = ""
 
@@ -38,7 +37,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchViewHolder>() {
         currentQuery = query
     }
 
-    fun addItems(newSearchResult:List<ClipEntry>){
+    fun addItems(newSearchResult: List<ClipEntry>) {
         searchList.clear()
         searchList.addAll(newSearchResult)
         searchList.sortByDescending { it.id }
@@ -69,6 +68,9 @@ class SearchAdapter : RecyclerView.Adapter<SearchViewHolder>() {
                 matcher.end(),
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
+        }
+        holder.itemView.setOnClickListener {
+            onClick(clipEntry)
         }
         holder.searchTextView.text = spannableBuilder
         val dateRange = DateUtils.getRelativeTimeSpanString(

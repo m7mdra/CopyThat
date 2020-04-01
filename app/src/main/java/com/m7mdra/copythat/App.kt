@@ -13,9 +13,12 @@
 package com.m7mdra.copythat
 
 import android.app.Application
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatDelegate
 import com.m7mdra.copythat.di.appModule
 import com.m7mdra.copythat.di.databaseModule
 import com.m7mdra.copythat.di.viewModelModule
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.startKoin
 import org.koin.android.logger.AndroidLogger
 
@@ -29,5 +32,11 @@ class App : Application() {
             modules = listOf(appModule, databaseModule, viewModelModule),
             logger = AndroidLogger(true)
         )
+        if (get<SharedPreferences>().getBoolean("nightmode_key", false)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        }
     }
 }

@@ -30,10 +30,8 @@
                     android:id="@+id/searchBar"
                     style="@style/Widget.AppCompat.SearchView.ActionBar"
                     android:layout_width="0dp"
-
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/white"
                     android:clickable="false"
                     android:focusable="false"
                     app:iconifiedByDefault="false"
@@ -80,12 +78,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ProgressBar
-                android:visibility="gone"
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/entriesRecyclerView"
@@ -98,8 +97,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Body2"
@@ -128,5 +127,67 @@
 
     </LinearLayout>
 
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:id="@+id/newContentLayout"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        app:cardElevation="8dp"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_margin="16dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unsaved Data found"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <TextView
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CopyThat detected an unsaved clip, would you like to save it?"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+            <TextView
+                android:id="@+id/unsavedDataTextView"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3" />
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ignore"
+                    android:id="@+id/ignoreButton"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:id="@+id/saveButton"
+                    android:layout_weight="3"
+                    app:backgroundTint="@color/colorAccent" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

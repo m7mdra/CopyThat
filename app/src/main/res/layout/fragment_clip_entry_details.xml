@@ -29,17 +29,29 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="@color/colorPrimary">
+<LinearLayout
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|start"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:background="?actionBarItemBackground"
+        app:srcCompat="@drawable/ic_close_black_24dp" />
+    <TextView
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Copy details"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        />
+</LinearLayout>
 
-            <ImageView
-                android:id="@+id/backButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="?actionBarItemBackground"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_close_black_24dp" />
         </androidx.cardview.widget.CardView>
 
         <ScrollView
@@ -90,10 +102,11 @@
         android:layout_gravity="bottom"
         android:layout_margin="16dp"
         android:id="@+id/clipControls"
-        app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="16dp">
 
         <LinearLayout
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center">

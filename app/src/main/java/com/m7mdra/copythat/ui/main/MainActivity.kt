@@ -13,25 +13,32 @@
 package com.m7mdra.copythat.ui.main
 
 import android.content.*
+import android.hardware.biometrics.BiometricPrompt
+import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.m7mdra.copythat.*
 import com.m7mdra.copythat.clipboard.ClipBoardService
+import com.m7mdra.copythat.database.ClipEntry
+import com.m7mdra.copythat.database.ClipRepository
 import com.m7mdra.copythat.ui.details.ClipEntryDetailsFragment
 import com.m7mdra.copythat.ui.search.SearchFragment
 import com.m7mdra.copythat.ui.settings.SettingsFragment
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -40,9 +47,31 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
     private lateinit var adapter: ClipEntriesAdapter
+    private val intentFilter = IntentFilter(Intent.ACTION_TIME_TICK);
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (::adapter.isInitialized) {
+                if (adapter.isNotEmpty()) {
+                    adapter.updateTime()
+                }
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(broadcastReceiver, intentFilter);
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(broadcastReceiver)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -67,17 +96,44 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                intent?.action.log()
-            }
-        }, IntentFilter(ClipBoardService::class.java.simpleName))
+        checkIfAndroid10AndAbove()
+        val cpm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        if (cpm.hasPrimaryClip()) {
+            val clip = cpm.primaryClip?.getItemAt(0)?.text.toString()
+            val clipRepository = get<ClipRepository>()
+            clipRepository.doseExists(clip.md5())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    if (!it) {
+                        newContentLayout.visible()
+                        unsavedDataTextView.text = clip
+                        saveButton.setOnClickListener {
+                            newContentLayout.visibility = View.GONE
+                            clipRepository.insert(ClipEntry(data = clip, hash = clip.md5() ))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                        }
+                        ignoreButton.setOnClickListener {
+                            newContentLayout.visibility = View.GONE
+
+                        }
+                    } else {
+                        newContentLayout.invisible()
+
+                    }
+                }, {
+
+
+                })
+        }
         copyText.setOnClickListener {
-            (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
+          /*  (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
                 ClipData.newPlainText(
                     "Copythat",
                     "Awesome, you copied this text, click to see details\n"
-                )
+                )*/
         }
         updateSwitch()
         adapter = ClipEntriesAdapter(
@@ -184,6 +240,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun checkIfAndroid10AndAbove() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            AlertDialog.Builder(this)
+                .setPositiveButton(android.R.string.ok){dialog,_->
+                    dialog.dismiss()
+                }
+                .setTitle("Android 10 limitations.")
+                .setMessage("Android 10 brought new changes to how we save your copied data and unfortunately the app dose not support the android 10.")
+                .show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

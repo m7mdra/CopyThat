@@ -15,6 +15,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/searchLayout"
     android:background="?android:windowBackground"
     tools:context=".ui.search.SearchFragment">
 
@@ -32,7 +33,6 @@
                 style="@style/Widget.AppCompat.SearchView.ActionBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 app:iconifiedByDefault="false"
                 app:queryHint="Search for Copies" />
 

@@ -16,7 +16,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 
-@Database(entities = [ClipEntry::class], version = 1, exportSchema = true)
+@Database(entities = [ClipEntry::class], version = 2, exportSchema = true)
 abstract class ClipDatabase : RoomDatabase() {
-    abstract fun dao(): ClipEntryDao
+        abstract fun dao(): ClipEntryDao
 }

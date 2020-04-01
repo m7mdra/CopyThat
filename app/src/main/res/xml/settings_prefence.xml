@@ -46,7 +46,13 @@
         android:icon="@drawable/ic_smartphone_black_24dp"
         android:key="start_on_boot"
         android:summary="When the phone restart the application will start tracking you clipboard actions"
-        android:title="Start CopyThat on System boot" />
+        android:title="Start on System boot" />
+    <SwitchPreference
+        android:icon="@drawable/ic_brightness_3_black_24dp"
+        android:title="Night Mode"
+        android:defaultValue="false"
+        android:key="nightmode_key"
+        />
     <Preference
         android:icon="@drawable/ic_info_outline_black_24dp"
         android:key="key_about"
