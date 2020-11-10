@@ -20,10 +20,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.m7mdra.copythat.ACTION_STOP_SERVICE
-import com.m7mdra.copythat.NOTIFICATION_CHANNEL_ID
-import com.m7mdra.copythat.R
-import com.m7mdra.copythat.REQUEST_CODE_STOP_SERVICE
+import com.m7mdra.copythat.*
 import com.m7mdra.copythat.ui.main.MainActivity
 
 class ClipNotification(private val context: Context) {
@@ -40,6 +37,11 @@ class ClipNotification(private val context: Context) {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(getContentIntent())
             .setSmallIcon(R.drawable.ic_typewriter_with_paper)
+            .addAction(NotificationCompat.Action(
+                0,
+                "Show bubble",
+                getShowBubblePendingIntent()
+            ))
             .addAction(
                 NotificationCompat.Action(
                     R.drawable.ic_stop_black_24dp,
@@ -48,6 +50,14 @@ class ClipNotification(private val context: Context) {
                 )
             )
     }
+
+    private fun getShowBubblePendingIntent() = PendingIntent.getActivity(
+        context,
+        32,
+        Intent(context, BubbleActivity::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
 
     private fun getContentIntent(): PendingIntent {
         return PendingIntent.getActivity(

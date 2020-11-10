@@ -91,10 +91,6 @@ class ClipEntriesAdapter(
         return itemCount != 0
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-
-    }
 
     fun updateTime() {
         repeat(itemCount) {

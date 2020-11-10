@@ -13,8 +13,6 @@
 package com.m7mdra.copythat.ui.main
 
 import android.content.*
-import android.hardware.biometrics.BiometricPrompt
-import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -50,10 +48,8 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter(Intent.ACTION_TIME_TICK);
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (::adapter.isInitialized) {
-                if (adapter.isNotEmpty()) {
-                    adapter.updateTime()
-                }
+            if (::adapter.isInitialized && adapter.isNotEmpty()) {
+                adapter.updateTime()
             }
         }
     }
@@ -97,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkIfAndroid10AndAbove()
+
         val cpm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         if (cpm.hasPrimaryClip()) {
             val clip = cpm.primaryClip?.getItemAt(0)?.text.toString()
@@ -110,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                         unsavedDataTextView.text = clip
                         saveButton.setOnClickListener {
                             newContentLayout.visibility = View.GONE
-                            clipRepository.insert(ClipEntry(data = clip, hash = clip.md5() ))
+                            clipRepository.insert(ClipEntry(data = clip, hash = clip.md5()))
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe()
@@ -129,11 +126,11 @@ class MainActivity : AppCompatActivity() {
                 })
         }
         copyText.setOnClickListener {
-          /*  (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
-                ClipData.newPlainText(
-                    "Copythat",
-                    "Awesome, you copied this text, click to see details\n"
-                )*/
+            /*  (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip =
+                  ClipData.newPlainText(
+                      "Copythat",
+                      "Awesome, you copied this text, click to see details\n"
+                  )*/
         }
         updateSwitch()
         adapter = ClipEntriesAdapter(
@@ -245,7 +242,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkIfAndroid10AndAbove() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             AlertDialog.Builder(this)
-                .setPositiveButton(android.R.string.ok){dialog,_->
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .setTitle("Android 10 limitations.")

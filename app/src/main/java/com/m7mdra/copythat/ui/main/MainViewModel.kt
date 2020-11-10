@@ -21,11 +21,10 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: ClipRepository) : ViewModel() {
     private val disposables = mutableListOf<Disposable>()
-    val deleteLiveData = MutableLiveData<DeleteEvent>()
+    val deleteLiveData = SingleLiveEvent<DeleteEvent>()
     val clipEntriesLiveData = MutableLiveData<QueryEvent>()
     private val lastDeleteItem = MutableLiveData<ClipEntry>()
 
